@@ -1,3 +1,4 @@
 node_modules
 .env
-instriction.tsx
+instruction.tsx
+notes.tsx
