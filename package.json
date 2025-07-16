@@ -8,10 +8,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/app.ts",
-    "migrate": "knex migrate:latest --knexfile src/config/knex/knexfile.ts",
-    "migrate:run": "knex migrate:latest --knexfile src/config/knex/knexfile.ts",
-    "seed": "knex seed:run --knexfile src/config/knex/knexfile.ts",
-    "seed:run": "knex seed:run --knexfile src/config/knex/knexfile.ts"
+    "migrate:make": "knex migrate:make --knexfile src/config/knex/knexfile.ts",
+    "migrate:up": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/config/knex/knexfile.ts",
+    "migrate:down": "ts-node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile src/config/knex/knexfile.ts",
+    "migrate:status": "ts-node -r dotenv/config node_modules/.bin/knex migrate:status --knexfile src/config/knex/knexfile.ts",
+    "seed:make": "knex seed:make --knexfile src/config/knex/knexfile.ts",
+    "start:dev": "docker-compose up -d && npm run db:reset",
+    "seed:run": "ts-node -r dotenv/config node_modules/.bin/knex seed:run --knexfile src/config/knex/knexfile.ts",
+    "refresh-db": "npm run migrate:down && npm run migrate:up && npm run seed:run",
+    "db:reset": "npm run migrate:down && npm run migrate:up && npm run seed:run",
+    "db:refresh": "npm run migrate:down && npm run migrate:up"
   },
   "repository": {
     "type": "git",
@@ -26,6 +32,8 @@
   },
   "homepage": "https://github.com/Leon3854/user-log#readme",
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@types/faker": "^6.6.8",
     "@types/node": "^24.0.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
