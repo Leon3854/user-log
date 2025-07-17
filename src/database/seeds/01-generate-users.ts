@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker/locale/ru";
 import { Knex } from "knex";
 import { User } from "../types/users.interface.js";
+import { userService } from "../../services/users-service/user.service.js";
 import redis from "../../lib/redis";
 
 export async function seed(knex: Knex): Promise<void> {
@@ -28,35 +29,32 @@ export async function seed(knex: Knex): Promise<void> {
     const fakeUsers = Array.from(
       { length: 10 },
       (): Omit<User, "id"> => ({
-        username: faker.internet.username(), // Добавим username
-        email: faker.internet.email({ provider: "example.com" }), // Единый домен
+        username: faker.internet.userName(),
+        email: faker.internet.email({ provider: "example.com" }),
         first_name: faker.person.firstName(),
         last_name: faker.person.lastName(),
         imei: faker.phone.imei(),
-        phone: faker.phone.number({ style: "national" }), // Единый формат
+        phone: faker.phone.number({ style: "national" }),
         address: `${faker.location.city()}, ${faker.location.streetAddress()}`,
-        company: faker.company.name(), // Более реалистичные названия
-        country: "Россия", // Фиксируем страну
-        avatar: faker.image.avatarGitHub(), // Более качественные аватары
-        created_at: faker.date.past({ years: 1 }), // Разные даты создания
+        company: faker.company.name(),
+        country: "Россия",
+        avatar: faker.image.avatarGitHub(),
+        created_at: faker.date.past({ years: 1 }),
         updated_at: new Date(),
       })
     );
 
-    // Транзакция: вставка + кеширование
-    await knex.transaction(async (trx) => {
-      await trx.batchInsert("users", fakeUsers, 10);
+    // Используем сервис для создания пользователей
+    for (const userData of fakeUsers) {
+      await userService.createUser(userData);
+    }
 
-      const pipeline = redis.pipeline();
-      pipeline.set("users:seeded", "true", "EX", 86400);
-      pipeline.set("users:data", JSON.stringify(fakeUsers), "EX", 3600);
-      await pipeline.exec();
-    });
-
-    console.log(`Inserted and cached ${fakeUsers.length} users`);
+    // Кешируем факт выполнения сидирования
+    await redis.set("users:seeded", "true", "EX", 86400);
+    console.log(`Successfully seeded ${fakeUsers.length} users`);
   } catch (error) {
     console.error("Seed failed:", error);
-    await redis.del("users:seeded"); // Откат кеша при ошибке
-    throw error; // Пробрасываем для остановки seed
+    await redis.del("users:seeded");
+    throw error;
   }
 }
