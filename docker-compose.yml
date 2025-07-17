@@ -11,6 +11,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-development} # Берем из .env или значение по умолчанию
       DB_HOST: ${POSTGRES_HOST}
@@ -19,6 +21,8 @@ services:
       DB_NAME: ${POSTGRES_DB}
       DB_PORT: ${POSTGRES_PORT:-5432}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       TZ: ${TZ:-Europe/Moscow}
     restart: unless-stopped
     volumes:
@@ -63,6 +67,25 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 256M
 
   migrate:
     build:
@@ -89,6 +112,8 @@ services:
 
 volumes:
   postgres-data:
+    driver: local
+  redis-data:
     driver: local
 
 networks:
