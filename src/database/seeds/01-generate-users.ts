@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker/locale/ru";
 import { Knex } from "knex";
 import { User } from "../types/users.interface.js";
 import { userService } from "../../services/users-service/user.service.js";
-import redis from "../../lib/redis";
+import redis from "../../lib/redis.js";
 
 export async function seed(knex: Knex): Promise<void> {
   try {
@@ -27,7 +27,7 @@ export async function seed(knex: Knex): Promise<void> {
 
     // Генерация данных
     const fakeUsers = Array.from(
-      { length: 10 },
+      { length: 20 },
       (): Omit<User, "id"> => ({
         username: faker.internet.userName(),
         email: faker.internet.email({ provider: "example.com" }),
@@ -46,7 +46,7 @@ export async function seed(knex: Knex): Promise<void> {
 
     // Используем сервис для создания пользователей
     for (const userData of fakeUsers) {
-      await userService.createUser(userData);
+      await userService.create(userData);
     }
 
     // Кешируем факт выполнения сидирования

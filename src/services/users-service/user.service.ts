@@ -1,7 +1,6 @@
 import knex from "../../database/knex.js";
 import { User } from "../../database/types/users.interface.js";
 import { cacheUser, invalidateUserCache, redisCache } from "../../lib/redis.js";
-
 export class UserService {
   @redisCache((id: number) => `user:${id}`, 3600)
   async getById(id: number): Promise<User | null> {
