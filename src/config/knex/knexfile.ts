@@ -1,57 +1,27 @@
 import type { Knex } from "knex";
-import path, { dirname } from "path";
-import { config } from "dotenv";
+import path from "path";
 import { fileURLToPath } from "url";
 
-config();
-
-type Environment = "development" | "production";
-
-// Получаем __dirname аналог для ES-модулей
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(__filename);
 
-// Универсальные пути относительно корня проекта
-const MIGRATIONS_DIR = path.join(__dirname, "../../database/migrations");
-const SEEDS_DIR = path.join(__dirname, "../../database/seeds");
-
-const knexConfig: Record<Environment, Knex.Config> = {
-  development: {
-    client: "pg",
-    connection: {
-      host: process.env.POSTGRES_HOST || "localhost",
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB || "postgres",
-      port: Number(process.env.POSTGRES_PORT) || 5432,
-    },
-    pool: { min: 2, max: 10 },
-    migrations: {
-      directory: MIGRATIONS_DIR,
-      extension: "ts",
-    },
-    seeds: {
-      directory: SEEDS_DIR,
-      extension: "ts",
-    },
+const config: Knex.Config = {
+  client: "pg",
+  connection: {
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    port: parseInt(process.env.POSTGRES_PORT || "5432"),
   },
-  production: {
-    client: "pg",
-    connection: process.env.DATABASE_URL,
-    pool: { min: 2, max: 10 },
-    migrations: {
-      directory: MIGRATIONS_DIR,
-      extension: "ts",
-    },
-    seeds: {
-      directory: SEEDS_DIR,
-      extension: "ts",
-    },
+  migrations: {
+    directory: path.join(__dirname, "../../database/migrations"),
+    extension: "ts",
+  },
+  seeds: {
+    directory: path.join(__dirname, "../../database/seeds"),
+    extension: "ts",
   },
 };
 
-const getCurrentEnvironment = (): Environment => {
-  return process.env.NODE_ENV === "production" ? "production" : "development";
-};
-
-export default knexConfig[getCurrentEnvironment()];
+export default config;

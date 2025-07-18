@@ -2,22 +2,24 @@
   "name": "user-log",
   "version": "1.0.0",
   "description": "The user log",
-  "main": "app.ts",
-  "types": "module",
+  "main": "dist/app.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node dist/app.ts",
+    "start": "node -r tsconfig-paths/register dist/app.js",
+    "knex": "NODE_OPTIONS='--loader ts-node/esm' knex",
     "migrate:make": "knex migrate:make --knexfile src/config/knex/knexfile.ts",
-    "migrate:up": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/config/knex/knexfile.ts",
-    "migrate:down": "ts-node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile src/config/knex/knexfile.ts",
-    "migrate:status": "ts-node -r dotenv/config node_modules/.bin/knex migrate:status --knexfile src/config/knex/knexfile.ts",
+    "migrate:up": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:latest --knexfile=src/config/knex/knexfile.ts",
+    "migrate:down": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:rollback --knexfile src/config/knex/knexfile.ts",
+    "migrate:status": "NODE_OPTIONS='--loader ts-node/esm' knex migrate:status --knexfile src/config/knex/knexfile.ts",
     "seed:make": "knex seed:make --knexfile src/config/knex/knexfile.ts",
+    "seed:run": "NODE_OPTIONS='--loader ts-node/esm' knex seed:run --knexfile=src/config/knex/knexfile.ts",
     "start:dev": "docker-compose up -d && npm run db:reset",
-    "seed:run": "ts-node -r dotenv/config node_modules/.bin/knex seed:run --knexfile src/config/knex/knexfile.ts",
-    "refresh-db": "npm run migrate:down && npm run migrate:up && npm run seed:run",
-    "db:reset": "npm run migrate:down && npm run migrate:up && npm run seed:run",
-    "db:refresh": "npm run migrate:down && npm run migrate:up"
+    "db:reset": "npm run migrate:down && npm run migrate:up && npm run seed:run"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Leon3854/user-log/issues"
   },
@@ -40,6 +41,7 @@
   },
   "dependencies": {
     "@types/express": "^5.0.3",
+    "@types/ioredis": "^4.28.10",
     "commander": "^14.0.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",

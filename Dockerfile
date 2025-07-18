@@ -4,24 +4,34 @@ FROM node:20-alpine
 # Устанавливаем рабочий каталог
 WORKDIR /app
 
-# 1. Копируем зависимости и устанавливаем их
+# 1. Устанавливаем системные зависимости
+RUN apk add --no-cache curl bash
+
+
+# 2. Копируем зависимости и устанавливаем их (с кэшированием)
 COPY package*.json ./
-RUN npm install
-RUN npm install -g knex && npm install
-
-# 2. Копируем исходный код
+RUN npm install && \
+    npm install -g knex ts-node typescript tsconfig-paths && \
+    npm cache clean --force
+RUN npm install -g knex@latest ts-node@latest
+RUN npm install -g ts-node@latest
+# 3. Копируем исходный код
 COPY . .
-RUN mkdir -p src/database/migrations src/database/seeds
 
-# 3. Собираем приложение
-RUN npm run build
+# 4. Создаем необходимые директории
+RUN mkdir -p \
+    src/database/migrations \
+    src/database/seeds \
+    src/database/types
 
-# 4. Копируем скрипт ожидания БД и даем права на выполнение
-COPY wait-for-postgres.sh .
-RUN chmod +x wait-for-postgres.sh
+# 5. Устанавливаем правильные разрешения
+RUN chmod +x wait-for-postgres.sh && \
+    chown -R node:node /app
 
-# 5. Устанавливаем curl для healthcheck (если нужно)
-RUN apk add --no-cache curl
+# 6. Переключаем на пользователя node для безопасности
+USER node
 
-# 6. Запускаем приложение через скрипт ожидания БД
+
+# 7. Запускаем приложение
 CMD ["./wait-for-postgres.sh", "postgres", "npm", "start"]
+

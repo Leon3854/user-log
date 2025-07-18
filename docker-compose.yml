@@ -95,16 +95,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run migrate && npm run seed"
+    command: sh -c "npm run migrate:up && npm run seed:run"
     environment:
       DB_HOST: ${POSTGRES_HOST}
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: ${POSTGRES_DB}
+      TS_NODE_PROJECT: "tsconfig.esm.json"
     restart: on-failure
     volumes:
       - .:/app
       - /app/node_modules
+      - ./src:/app/src
       - ./src/database/migrations:/app/database/migrations
       - ./src/database/seeds:/app/database/seeds
     networks:
