@@ -21,21 +21,15 @@
     1.2  Контроль состояния (Already up to date = миграции применены)
 
 ### 2.0 Загрузка тестовых данных (seeds)
+    2.1 Наполнение БД фиктивными данными (например, пользователями) через knex seed:run
+    2.2 Кеширование в Redis для избежания повторного сидинга (Users already seeded (cached))
 
-Наполнение БД фиктивными данными (например, пользователями) через knex seed:run
+### 3.0 Интеграция в Docker
+    3.1 Оркестрация сервисов (postgres, redis, app, migrate) через docker-compose.yml
+    3.2 Health-чеки для проверки работоспособности БД
 
-Кеширование в Redis для избежания повторного сидинга (Users already seeded (cached))
-
-Интеграция в Docker
-
-Оркестрация сервисов (postgres, redis, app, migrate) через docker-compose.yml
-
-Health-чеки для проверки работоспособности БД
-
-Решение проблем модульности
-
-Настройка ts-node/esm для работы с ES-модулями в TypeScript
-
-Конфигурация путей через tsconfig.json (aliases, baseUrl)
+### 4.0 Решение проблем модульности
+    4.1 Настройка ts-node/esm для работы с ES-модулями в TypeScript
+    4.2 Конфигурация путей через tsconfig.json (aliases, baseUrl)
 
 
