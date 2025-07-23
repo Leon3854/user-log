@@ -13,3 +13,6 @@ export interface User {
   created_at: Date;
   updated_at: Date;
 }
+
+export type UserCreateData = Omit<User, "id">;
+export type UserUpdateData = Partial<Omit<User, "id">>;

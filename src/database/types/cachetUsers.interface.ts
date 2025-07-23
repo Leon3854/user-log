@@ -1,4 +1,4 @@
-import { User } from "./users.interface.js";
+import { User } from "./users.interface";
 
 export interface CachedUsers {
   seeded: boolean;

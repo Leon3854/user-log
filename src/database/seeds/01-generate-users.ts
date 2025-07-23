@@ -1,10 +1,13 @@
 import { faker } from "@faker-js/faker/locale/ru";
 import { Knex } from "knex";
 import { User } from "../types/users.interface.js";
-import { userService } from "../../services/users-service/user.service.js";
-import redis from "../../lib/redis.js";
+import { userService } from "@services/users-service/user.service";
+import redis from "../../lib/redis";
 
 export async function seed(knex: Knex): Promise<void> {
+  // Пропускаем в тестовом окружении
+  if (process.env.NODE_ENV === "test") return;
+
   try {
     // Проверка кеша
     const seeded = await redis.get("users:seeded");
@@ -29,7 +32,7 @@ export async function seed(knex: Knex): Promise<void> {
     const fakeUsers = Array.from(
       { length: 20 },
       (): Omit<User, "id"> => ({
-        username: faker.internet.userName(),
+        username: faker.internet.username(),
         email: faker.internet.email({ provider: "example.com" }),
         first_name: faker.person.firstName(),
         last_name: faker.person.lastName(),
@@ -50,6 +53,7 @@ export async function seed(knex: Knex): Promise<void> {
     }
 
     // Кешируем факт выполнения сидирования
+    await knex.batchInsert("users", fakeUsers, 100);
     await redis.set("users:seeded", "true", "EX", 86400);
     console.log(`Successfully seeded ${fakeUsers.length} users`);
   } catch (error) {

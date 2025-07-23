@@ -1,32 +1,44 @@
 import express from "express";
-import knex, { migrate, seed } from "./database/knex.js";
+import knex, { migrate, seed } from "@src/database/knex";
 import "dotenv/config";
-import { userController } from "./services/users-service/user.controller.js";
+import { userController } from "./services/users-service/user.controller";
+import "reflect-metadata";
 
-async function main() {
-  // Инициализация Express приложения
-  const app = express();
-  const port = process.env.PORT || 3000;
+const app = express();
+const port = process.env.PORT || 3000;
 
-  // Middleware для обработки JSON
-  app.use(express.json());
+app.use(express.json());
+app.get("/users/:id", userController.getById.bind(userController));
+app.post("/users", userController.create.bind(userController));
 
-  // Маршруты
-  app.get("/users/:id", userController.getById.bind(userController));
-  app.post("/users", userController.create.bind(userController));
+// Экспортируем app для тестов
+export { app };
 
-  // Запуск миграций и сидов
+// Функция запуска сервера
+export const startServer = async () => {
   await migrate.latest();
   await seed.run();
 
-  // Запуск сервера
-  app.listen(port, () => {
+  return app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
+};
+
+// Универсальная проверка на прямой запуск
+const isMainModule = () => {
+  // Для ES модулей
+  if (typeof import.meta?.url === "string") {
+    return import.meta.url === `file://${process.argv[1]}`;
+  }
+  // Для CommonJS
+  return require.main === module;
+};
+
+if (isMainModule()) {
+  startServer().catch(console.error);
 }
 
-// Вызов основной функции с обработкой возможных ошибок
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Запуск только если файл исполняется напрямую
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer().catch(console.error);
+}
