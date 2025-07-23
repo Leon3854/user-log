@@ -1,37 +1,31 @@
-# Используем официальный образ Node.js
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 
-# Устанавливаем рабочий каталог
+# Установка зависимостей
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends postgresql-client \
+		redis-tools \
+		netcat-openbsd && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# 1. Устанавливаем системные зависимости
-RUN apk add --no-cache curl bash
-
-
-# 2. Копируем зависимости и устанавливаем их (с кэшированием)
+# Копируем package.json и package-lock.json
 COPY package*.json ./
+
+# Устанавливаем зависимости (без ts-node/esm)
 RUN npm install && \
-    npm install -g knex ts-node typescript tsconfig-paths && \
+    npm install -g knex typescript && \
     npm cache clean --force
-RUN npm install -g knex@latest ts-node@latest
-RUN npm install -g ts-node@latest
-# 3. Копируем исходный код
+
+		RUN apt-get update && apt-get install -y redis-tools && rm -rf /var/lib/apt/lists/*
+
+# Копируем остальные файлы
 COPY . .
 
-# 4. Создаем необходимые директории
-RUN mkdir -p \
-    src/database/migrations \
-    src/database/seeds \
-    src/database/types
-
-# 5. Устанавливаем правильные разрешения
-RUN chmod +x wait-for-postgres.sh && \
-    chown -R node:node /app
-
-# 6. Переключаем на пользователя node для безопасности
 USER node
 
+# Убираем все ESM-флаги
+ENV NODE_OPTIONS="--import tsx --experimental-specifier-resolution=node"
 
-# 7. Запускаем приложение
 CMD ["./wait-for-postgres.sh", "postgres", "npm", "start"]
-

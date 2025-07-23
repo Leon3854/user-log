@@ -1,7 +1,14 @@
 import _knex from "knex";
-import knexConfig from "../config/knex/knexfile.js";
+import knexConfig from "@src/config/knex/knexfile";
 
-const knex = _knex(knexConfig);
+const config = knexConfig[process.env.NODE_ENV || "development"];
+if (!config) {
+  throw new Error(
+    `Missing Knex configuration for environment: ${process.env.NODE_ENV}`
+  );
+}
+
+const knex = _knex(config);
 
 export default knex;
 

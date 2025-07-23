@@ -1,4 +1,4 @@
-import { User } from "./users.interface.js";
+import { User } from "./users.interface";
 
 export interface IUserService {
   getById(id: number): Promise<User | null>;

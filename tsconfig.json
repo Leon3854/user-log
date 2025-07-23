@@ -1,24 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS", // Должно быть "NodeNext" (с большой буквы)
-    "moduleResolution": "node", // Аналогично
-    "baseUrl": "./src",
-    "paths": {
-      "@services/*": ["services/*"]
-    },
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "skipLibCheck": true,
-    "sourceMap": false
+    "isolatedModules": true,
+    "types": ["jest"],
+    "paths": {
+      "@src/*": ["src/*"],
+      "@src/*.js": ["src/*.ts"],
+      "@test/*": ["test/*"],
+      "@services/*": ["src/services/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist"]
 }
