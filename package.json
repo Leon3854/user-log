@@ -10,10 +10,14 @@
     "build": "tsc",
     "start": "NODE_OPTIONS='--import tsx' node ./src/app.ts",
     "dev": "NODE_OPTIONS='--import tsx' tsx watch src/app.ts",
-    "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest",
-    "test:integration": "dotenv -e .env.test jest --config=jest.config.cjs --detectOpenHandles",
-    "test:docker": "docker-compose -f docker-compose.yml down -v && docker-compose -f docker-compose.yml up test-runner --exit-code-from test-runner",
-    "test:e2e": "NODE_ENV=test jest --config=jest.config.cjs --testMatch=\"**/test/e2e/**/*.test.ts\""
+    "test": "NODE_ENV=test jest",
+    "test:integration": "NODE_ENV=test jest --config jest-integration.config.js",
+    "test:e2e": "NODE_ENV=test jest --config jest-e2e.config.js",
+    "migrate:latest": "knex migrate:latest",
+    "seed:run": "knex seed:run",
+    "test:docker": "docker-compose down -v --remove-orphans && docker-compose up test-runner",
+    "test:docker:unit": "docker-compose run -e TEST_TYPE=unit -e TEST_SCRIPT=test:unit test-runner",
+    "test:docker:e2e": "docker-compose run -e TEST_TYPE=e2e -e TEST_SCRIPT=test:e2e test-runner"
   },
   "dependencies": {
     "dotenv": "^17.2.0",

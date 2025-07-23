@@ -1,3 +1,4 @@
+//jest-resolver.cjs
 const { defaultResolver } = require("jest-resolve");
 
 module.exports = (request, options) => {

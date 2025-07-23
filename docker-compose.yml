@@ -158,25 +158,37 @@ services:
       DB_NAME: test_db
       REDIS_HOST: test-redis
       REDIS_PORT: 6379
+      TEST_TYPE: integration
+      TEST_SCRIPT: test:integration
+      KNEX_PATH: ./knexfile.js
     volumes:
       - .:/app
       - /app/node_modules
     command: >
       sh -c "
-      # Ждем готовности PostgreSQL
-      while ! pg_isready -h test-db -U test_user -d test_db; do sleep 1; done
+      # Ждем PostgreSQL
+      echo 'Waiting for PostgreSQL...'
+      timeout 30s sh -c 'until pg_isready -h $$DB_HOST -U $$DB_USER; do sleep 1; done'
 
-      # Ждем готовности Redis
-      while ! nc -z test-redis 6379; do sleep 1; done
+      # Ждем Redis
+      echo 'Waiting for Redis...'
+      timeout 30s sh -c 'until nc -z $$REDIS_HOST $$REDIS_PORT; do sleep 1; done'
 
-      # Применяем миграции
-      cd src/database/migrations
-      knex migrate:latest --env test
-      knex seed:run --env test
+      # Компилируем TypeScript файлы
+      echo 'Compiling TypeScript...'
+      npm run build
+
+      # Для integration/e2e тестов применяем миграции
+      if [ \"$$TEST_TYPE\" = \"integration\" ] || [ \"$$TEST_TYPE\" = \"e2e\" ]; then
+      echo 'Running migrations...'
+      npx knex migrate:latest --knexfile dist/config/knex/knexfile.js --env test
+      echo 'Running seeds...'
+      npx knex seed:run --knexfile dist/config/knex/knexfile.js --env test
+      fi
 
       # Запускаем тесты
-      cd /app
-      npm run test:integration
+      echo 'Starting tests...'
+      npm run $$TEST_SCRIPT
       "
     networks:
       - app-network

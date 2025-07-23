@@ -2,9 +2,10 @@ FROM node:20-bookworm-slim
 
 # Установка зависимостей
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postgresql-client \
-		redis-tools \
-		netcat-openbsd && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    redis-tools \
+    netcat-openbsd && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
