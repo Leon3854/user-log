@@ -1,3 +1,4 @@
+// tst/e2e/app.e2e.test.tss
 import type { Config } from "jest";
 
 const config: Config = {
