@@ -84,7 +84,7 @@ ____________
 <pre>npm run test:docker</pre>
 
 Отдельный запуск тестов для проверки только unit-тестов 
-<pre>```npm run test:docker:unit```</pre> 
+<pre>npm run test:docker:unit</pre> 
 
 Запуск интеграционных тестов
 <pre>npm run test:docker:integration</pre>
