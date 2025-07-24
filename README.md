@@ -90,6 +90,6 @@ ____________
 <pre>```npm run test:docker:integration```</pre>
 
 Запуск — e2e-тестов
-<pre>```npm run test:docker:e2e```</pre> 
+<pre>npm run test:docker:e2e</pre> 
 
 
