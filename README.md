@@ -42,22 +42,22 @@
 
 ### Комнады 
 -------------
-<pre> ```docker-compose down -v``` </pre>
+<pre> docker-compose down -v </pre>
 останавливаем и удаляем контейнеры, созданные с помощью docker-compose up
 
-<pre> ```docker system prune -a ``` </pre>
+<pre> docker system prune -a </pre>
 очищаем Docker от всех неиспользуемых объектов: остановленных контейнеров, неиспользуемых сетей, висячих образов (dangling images) и неиспользуемых томов. Опция -a (или --all) расширяет очистку, удаляя все неиспользуемые образы, а не только висячие.
 
-<pre>```docker-compose up -d --build```</pre>
+<pre>docker-compose up -d --build</pre>
 Перед запуском пересобираем образы, даже если они уже существуют и запускаем контейнеры, описанные в docker-compose.yml в фоновом режиме не блокируя терминал
 
-<pre>```docker-compose run --rm migrate npm run migrate:up```</pre>
+<pre>docker-compose run --rm migrate npm run migrate:up</pre>
 Выполненим новые миграции (обновляет структуру базы данных).
 
-<pre>```docker-compose run --rm migrate npm run seed:run```</pre>
+<pre>docker-compose run --rm migrate npm run seed:run</pre>
  Заполнении базы данных начальными (seed) данными.
 
-<pre>``` docker-compose exec postgres psql -U postgres -d user-log -c "SELECT id, username, email FROM users;"```</pre>
+<pre> docker-compose exec postgres psql -U postgres -d user-log -c "SELECT id, username, email FROM users;"</pre>
 Выполним команду внутри уже запущенного контейнера сервиса postgres и выполним SQL-запрос, который выбирает поля id, username и email из таблицы users.
 
 Система готова к работе с актуальной схемой БД и тестовыми данными, развернутыми в изолированном Docker-окружении. 
@@ -68,15 +68,15 @@ ____________
 Команды для локального запуска тестов:
 
 Для запуска модульных тестов проверки мелких сценариев на работаспасобность 
-<pre>```npm test ```</pre>
+<pre>npm test</pre>
 
 Запускает интеграционные тесты для проверки соединения с бд, API, внешними сервисами 
 а так же убедиться, что разные компоненты корректно интегрируются и совместно выполняют нужные задачи.
-<pre>```npm run test:integration```</pre>
+<pre>npm run test:integration</pre>
 
 Двнны тест проверяют работу приложения целиком, имитируя действия реального пользователя.
 Цель — убедиться, что все части системы работают согласованно и пользовательский сценарий проходит успешно.
-<pre>`npm run test:e2e`</pre> 
+<pre>npm run test:e2e</pre> 
 
 Данная группа тестов предназначена для запуска тестов внутри Docker-контейнеров, а не напрямую на локальной машине.
 
